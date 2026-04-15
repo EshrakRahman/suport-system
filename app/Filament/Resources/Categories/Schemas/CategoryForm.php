@@ -22,7 +22,8 @@ class CategoryForm
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
                 TextInput::make('slug')
-                    ->required(),
+                    ->required()
+                    ->readOnly(),
                 Toggle::make('is_active')
                     ->default(false),
             ]);
