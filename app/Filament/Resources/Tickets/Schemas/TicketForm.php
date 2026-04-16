@@ -6,10 +6,9 @@ use App\Models\Ticket;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
+use Ramsey\Uuid\Type\Time;
 
 class TicketForm
 {
@@ -26,11 +25,13 @@ class TicketForm
                     ->schema([
                         Select::make('status')
                             ->options(Ticket::STATUS)
-                            ->required(),
+                            ->required()
+                            ->in(Ticket::STATUS),
 
                         Select::make('priority')
                             ->options(Ticket::PRIORITY)
-                            ->required(),
+                            ->required()
+                            ->in(Ticket::PRIORITY),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -38,7 +39,8 @@ class TicketForm
                 Group::make()
                     ->schema([
                         Select::make('assigned_to')
-                            ->relationship('assignedTo', 'name'),
+                            ->relationship('assignedTo', 'name')
+                            ->required(),
                         // Select::make('assigned_by')
                         //     ->relationship('assignedBy', 'name')
                         // Toggle::make('is_resolved'),
