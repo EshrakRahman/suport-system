@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
+use App\Models\Category;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -21,7 +22,8 @@ class CategoriesTable
                 TextColumn::make('name'),
                 TextColumn::make('slug'),
                 ToggleColumn::make('is_active')
-                    ->label('Active'),
+                    ->label('Active')
+                    ->disabled(fn(Category $record) => ! auth()->user()->can('update', $record)),
             ])
             ->filters([
                 //
@@ -33,7 +35,8 @@ class CategoriesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->hidden(!auth()->user()->hasPermission('category_delete')),
                 ]),
             ]);
     }
