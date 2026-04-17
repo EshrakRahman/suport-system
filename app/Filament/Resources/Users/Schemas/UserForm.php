@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Operation;
+use Stringable;
 
 class UserForm
 {
@@ -18,8 +20,8 @@ class UserForm
                     ->required()
                     ->unique(ignoreRecord: true),
                 TextInput::make('password')
-                    ->required()
-                    ->password(),
+                    ->required(fn(string $operation): bool => $operation === 'create')->password()
+                    ->hidden(fn(string $operation): bool => $operation === 'edit'),
             ]);
     }
 }

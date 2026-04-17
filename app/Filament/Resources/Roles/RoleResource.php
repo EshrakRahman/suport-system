@@ -19,7 +19,8 @@ class RoleResource extends Resource
 {
     protected static ?string $model = Role::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Key;
+    protected static string|\UnitEnum|null $navigationGroup = 'Access Controll';
 
     protected static ?string $recordTitleAttribute = 'name';
 

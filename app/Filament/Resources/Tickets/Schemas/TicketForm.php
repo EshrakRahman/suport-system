@@ -2,13 +2,15 @@
 
 namespace App\Filament\Resources\Tickets\Schemas;
 
+use App\Models\Role;
 use App\Models\Ticket;
+use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
-use Ramsey\Uuid\Type\Time;
+use Illuminate\Database\Eloquent\Builder;
 
 class TicketForm
 {
@@ -39,8 +41,13 @@ class TicketForm
                 Group::make()
                     ->schema([
                         Select::make('assigned_to')
-                            ->relationship('assignedTo', 'name')
+                            ->options(
+                                User::whereHas('roles', function (Builder $builder) {
+                                    $builder->where('name', Role::ROLES['Agent']);
+                                })->pluck('name', 'id')->toArray()
+                            )
                             ->required(),
+
                         // Select::make('assigned_by')
                         //     ->relationship('assignedBy', 'name')
                         // Toggle::make('is_resolved'),

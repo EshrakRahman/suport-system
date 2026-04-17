@@ -4,13 +4,9 @@ namespace App\Filament\Resources\Tickets\RelationManagers;
 
 use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -45,7 +41,10 @@ class CategoriesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                AttachAction::make()->preloadRecordSelect(),
+                AttachAction::make()
+                    ->preloadRecordSelect()
+                    ->accessSelectedRecords()
+                    ->recordSelectOptionsQuery(fn(Builder $query) => $query->active())
             ])
             ->recordActions([
                 // EditAction::make(),

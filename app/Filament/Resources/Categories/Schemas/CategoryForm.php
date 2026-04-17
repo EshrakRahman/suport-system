@@ -18,7 +18,7 @@ class CategoryForm
                 TextInput::make('name')
                     ->required()
                     ->autofocus()
-                    ->unique()
+                    ->unique(ignoreRecord: true)
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
                 TextInput::make('slug')

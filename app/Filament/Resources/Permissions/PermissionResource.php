@@ -7,7 +7,6 @@ use App\Filament\Resources\Permissions\Pages\EditPermission;
 use App\Filament\Resources\Permissions\Pages\ListPermissions;
 use App\Filament\Resources\Permissions\Schemas\PermissionForm;
 use App\Filament\Resources\Permissions\Tables\PermissionsTable;
-use App\Filament\Resources\Roles\RelationManagers\PermissionsRelationManager;
 use App\Models\Permission;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -17,10 +16,13 @@ use Filament\Tables\Table;
 
 class PermissionResource extends Resource
 {
+
     protected static ?string $model = Permission::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::FingerPrint;
 
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Access Controll';
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema

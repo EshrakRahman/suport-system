@@ -10,12 +10,15 @@ use App\Filament\Resources\Tickets\RelationManagers\CategoriesRelationManager;
 use App\Filament\Resources\Tickets\Schemas\TicketForm;
 use App\Filament\Resources\Tickets\Schemas\TicketInfolist;
 use App\Filament\Resources\Tickets\Tables\TicketsTable;
+use App\Models\Role;
 use App\Models\Ticket;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class TicketResource extends Resource
 {
@@ -46,7 +49,17 @@ class TicketResource extends Resource
             CategoriesRelationManager::class
         ];
     }
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
 
+        return parent::getEloquentQuery()
+            ->when(
+                // Check if the user DOES NOT have the Admin role
+                !$user->roles()->where('name', Role::ROLES['Admin'])->exists(),
+                fn(Builder $query) => $query->where('assigned_to', auth()->id())
+            );
+    }
     public static function getPages(): array
     {
         return [
