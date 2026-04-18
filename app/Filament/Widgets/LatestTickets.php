@@ -1,40 +1,52 @@
 <?php
 
-namespace App\Filament\Resources\Tickets\Tables;
+namespace App\Filament\Widgets;
 
+use App\Models\Role;
 use App\Models\Ticket;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\RichEditor\TipTapExtensions\TextColorExtension;
-use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Filament\Widgets\TableWidget;
 
-class TicketsTable
+class LatestTickets extends TableWidget
 {
-    public static function configure(Table $table): Table
+    protected int | string | array $columnSpan = 'full';
+    protected static ?int $sort = 2;
+
+
+    public function table(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at', 'desc')
+            ->query(function () {
+                $user = auth()->user();
+                $query = Ticket::query();
+
+                // 1. Use 'where' on the collection to see if 'Admin' exists
+                // We use strtolower to keep it safe from typos
+                $isAdmin = $user->roles->contains('name', Role::ROLES['Admin']);
+
+                if ($isAdmin) {
+                    // Admin: Show everything
+                    return $query;
+                }
+
+                // Agent: Show only assigned
+                return $query->where('assigned_to', $user->id);
+            })
             ->columns([
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable()
                     ->description(fn(Ticket $ticket): ?string => $ticket->description || null),
-                // TextColumn::make('status')
-                //     ->badge()
-                //     ->colors([
-                //         'warning' => Ticket::STATUS['Archived'],
-                //         'danger' => Ticket::STATUS['Open'],
-                //         'success' => Ticket::STATUS['Closed'],
-                //     ]),
-                SelectColumn::make('status')
-                    ->options(Ticket::STATUS),
+                TextColumn::make('status')
+                    ->badge()
+                    ->colors([
+                        'warning' => Ticket::STATUS['Archived'],
+                        'danger' => Ticket::STATUS['Open'],
+                        'success' => Ticket::STATUS['Closed'],
+                    ]),
                 TextColumn::make('priority')
                     ->badge()
                     ->colors([
@@ -52,24 +64,19 @@ class TicketsTable
                 TextColumn::make('created_at')
                     ->sortable()
                     ->dateTime()
-
             ])
             ->filters([
-                SelectFilter::make('status')
-                    ->options(Ticket::STATUS)
-                    ->placeholder('Filter by status'),
-                SelectFilter::make('priority')
-                    ->options(Ticket::PRIORITY)
-                    ->placeholder('Filter by priority')
+                //
+            ])
+            ->headerActions([
+                //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+                //
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    //
                 ]),
             ]);
     }
